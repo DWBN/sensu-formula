@@ -1,3 +1,4 @@
+{%- from "sensu/pillar_map.jinja" import sensu with context %}
 {
   "client": {
     {% if sensu.client.add_server_id -%}
