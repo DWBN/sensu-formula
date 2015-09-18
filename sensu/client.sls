@@ -9,7 +9,6 @@ include:
   file.managed:
     - source: salt://sensu/files/client.json
     - template: jinja
-    - context: sensu
     - user: root
     - group: root
     - mode: 644
