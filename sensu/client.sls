@@ -9,6 +9,7 @@ include:
   file.managed:
     - source: salt://sensu/files/client.json
     - template: jinja
+    - context: sensu
     - user: root
     - group: root
     - mode: 644
@@ -65,4 +66,3 @@ client_install_{{ gem }}:
     - name: {{ gem_path }} install {{ gem }} --no-ri --no-rdoc
     - unless: {{ gem_path }} list | grep -q {{ gem }}
 {% endfor %}
-
