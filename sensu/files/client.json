@@ -2,7 +2,7 @@
 {
   "client": {
     {% if sensu.client.add_server_id -%}
-    "name": {{ grains['fqdn']|json }}-{{ grains['fqdn']|json }},
+    "name": "{{ grains['fqdn'] }}-{{ grains['fqdn'] }}",
     {% else -%}
     "name": {{ grains['fqdn']|json }},
     {% endif -%}
