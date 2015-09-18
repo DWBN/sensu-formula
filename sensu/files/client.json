@@ -5,7 +5,7 @@
     {% else -%}
     "name": {{ grains['fqdn']|json }},
     {% endif -%}
-    "address": {{ grains['ipv4'][1]|json }},
+    "address": {{ grains['ipv4'][0]|json }},
     "subscriptions": [ "all" ]
   }
 }
