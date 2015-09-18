@@ -1,6 +1,10 @@
 {
   "client": {
+    {% if sensu.client.add_server_id -%}
+    "name": {{ grains['fqdn']|json }}-{{ grains['fqdn']|json }},
+    {% else -%}
     "name": {{ grains['fqdn']|json }},
+    {% endif -%}
     "address": {{ grains['ipv4'][0]|json }},
     "subscriptions": [ "all" ]
   }
