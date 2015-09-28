@@ -65,4 +65,3 @@ client_install_{{ gem }}:
     - name: {{ gem_path }} install {{ gem }} --no-ri --no-rdoc
     - unless: {{ gem_path }} list | grep -q {{ gem }}
 {% endfor %}
-
