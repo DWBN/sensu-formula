@@ -35,7 +35,7 @@ sensu-client:
     - watch:
       - file: /etc/sensu/conf.d/*
 
-/etc/rc0.d/delete-sensu-client.sh:
+/etc/rc0.d/K25delete-sensu-client.sh:
   file.managed:
     - mode: 775
     - source: salt://sensu/files/delete-sensu-client.sh
