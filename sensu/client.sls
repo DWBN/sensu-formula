@@ -35,6 +35,14 @@ sensu-client:
     - watch:
       - file: /etc/sensu/conf.d/*
 
+/etc/rc0.d/delete-sensu-client.sh:
+  file.managed:
+    - mode: 775
+    - source: salt://sensu/files/delete-sensu-client.sh
+    - template: jinja
+
+
+
 {% if sensu.client.embedded_ruby %}
 /etc/default/sensu:
   file.replace:
