@@ -1,8 +1,8 @@
 {%- from "sensu/pillar_map.jinja" import sensu with context %}
 {
   "client": {
-    {% if sensu.client.add_server_id -%}
-    "name": "{{ grains['fqdn'] }}-{{ grains['server_id'] }}",
+    {% if sensu.client.add_machine_id -%}
+    "name": "{{ grains['fqdn'] }}-{{ grains['machine_id'] }}",
     {% else -%}
     "name": {{ grains['fqdn']|json }},
     {% endif -%}
