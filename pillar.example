@@ -6,6 +6,8 @@ sensu:
   client:
     embedded_ruby: true
     nagios_plugins: true
+    add_machine_id: false
+    graphite_url: 'http://path_to_your_graphite_host'
   rabbitmq:
     host: 10.0.0.1
     user: sensu
