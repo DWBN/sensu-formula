@@ -62,6 +62,16 @@ sensu-client:
       - service: sensu-client
 {% endif %}
 
+{% if sensu.client.log_level %}
+/etc/default/sensu_log:
+  file.replace:
+    - name: /etc/default/sensu
+    - pattern: 'LOG_LEVEL=.*'
+    - repl: 'LOG_LEVEL={{ sensu.client.log_level }}'
+    - watch_in:
+      - service: sensu-client
+{% endif %}
+
 {% if sensu.client.nagios_plugins %}
 {{ services.nagios_plugins }}:
   pkg:
