@@ -41,11 +41,20 @@ sensu-client:
     - source: salt://sensu/files/delete-sensu-client.sh
     - template: jinja
 
+/etc/default/sensu:
+  file.managed:
+    - source: salt://sensu/files/sensu
+    - user: root
+    - group: root
+    - mode: 644
+    - require:
+      - pkg: sensu
 
 
 {% if sensu.client.embedded_ruby %}
-/etc/default/sensu:
+/etc/default/sensu_ruby:
   file.replace:
+    - name: /etc/default/sensu
     - pattern: 'EMBEDDED_RUBY=false'
     - repl: 'EMBEDDED_RUBY=true'
     - watch_in:
