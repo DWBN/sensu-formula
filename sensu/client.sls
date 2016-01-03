@@ -52,15 +52,6 @@ sensu-client:
       - service: sensu-client
 {% endif %}
 
-{% if sensu.client.log_warn %}
-/etc/default/sensu_log:
-  file.replace:
-    - name: /etc/default/sensu
-    - pattern: 'LOG_LEVEL=.*'
-    - repl: 'LOG_LEVEL=true'
-    - watch_in:
-      - service: sensu-client
-{% endif %}
 
 {% if sensu.client.log_level %}
 /etc/default/sensu_log:
