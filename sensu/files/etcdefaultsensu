@@ -1,0 +1,4 @@
+{% from "sensu/pillar_map.jinja" import sensu with context -%}
+## File is managed by Salt, don't edit
+EMBEDDED_RUBY={{ sensu.client.embedded_ruby }}
+LOG_LEVEL={{ sensu.etcdefaultsensu.log_level }}
