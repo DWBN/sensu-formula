@@ -36,6 +36,7 @@ sensu-client:
       - file: /etc/default/sensu
     - watch:
       - file: /etc/sensu/conf.d/*
+      - file: /etc/default/sensu
 
 /etc/rc0.d/K25delete-sensu-client.sh:
   file.managed:
