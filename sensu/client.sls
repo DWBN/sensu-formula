@@ -4,6 +4,7 @@
 include:
   - sensu
   - sensu.rabbitmq_conf
+  - sensu.etc-default-sensu
 
 /etc/sensu/conf.d/client.json:
   file.managed:
@@ -32,6 +33,7 @@ sensu-client:
     - require:
       - file: /etc/sensu/conf.d/client.json
       - file: /etc/sensu/conf.d/rabbitmq.json
+      - file: /etc/default/sensu
     - watch:
       - file: /etc/sensu/conf.d/*
 
@@ -41,36 +43,7 @@ sensu-client:
     - source: salt://sensu/files/delete-sensu-client.sh
     - template: jinja
 
-/etc/default/sensu:
-  file.managed:
-    - source: salt://sensu/files/sensu
-    - user: root
-    - group: root
-    - mode: 644
-    - require:
-      - pkg: sensu
 
-
-{% if sensu.client.embedded_ruby %}
-/etc/default/sensu_ruby:
-  file.replace:
-    - name: /etc/default/sensu
-    - pattern: 'EMBEDDED_RUBY=false'
-    - repl: 'EMBEDDED_RUBY=true'
-    - watch_in:
-      - service: sensu-client
-{% endif %}
-
-
-{% if sensu.client.log_level %}
-/etc/default/sensu_log:
-  file.replace:
-    - name: /etc/default/sensu
-    - pattern: 'LOG_LEVEL=.*'
-    - repl: 'LOG_LEVEL={{ sensu.client.log_level }}'
-    - watch_in:
-      - service: sensu-client
-{% endif %}
 
 {% if sensu.client.nagios_plugins %}
 {{ services.nagios_plugins }}:
