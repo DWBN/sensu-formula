@@ -2,7 +2,7 @@
 
 /etc/default/sensu:
   file.managed:
-    - source: salt://sensu/files/etc-default-sensu
+    - source: salt://sensu/files/etcdefaultsensu
     - template: jinja
     - user: root
     - group: root
