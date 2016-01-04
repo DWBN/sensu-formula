@@ -4,7 +4,7 @@
 include:
   - sensu
   - sensu.rabbitmq_conf
-  - sensu.etc-default-sensu
+  - sensu.etcdefaultsensu
 
 /etc/sensu/conf.d/client.json:
   file.managed:
