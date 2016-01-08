@@ -8,6 +8,8 @@ sensu:
     nagios_plugins: true
     add_machine_id: false
     graphite_url: 'http://path_to_your_graphite_host'
+    grafana_url: 'http://path_to_your_grafana_host'
+
   rabbitmq:
     host: 10.0.0.1
     user: sensu
@@ -28,3 +30,5 @@ sensu:
       site2:
         host: 1.2.3.4
         password: secret
+  etcdefaultsensu:
+    log_leveL: 'info' #possible: debug, info, warn, error
