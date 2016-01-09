@@ -1,16 +1,10 @@
+{% from "sensu/pillar_map.jinja" import sensu with context -%}
+
 include:
   - sensu
+  - sensu.api_conf # Some handlers need to access the API server
   - sensu.rabbitmq_conf
-
-/etc/sensu/conf.d/redis.json:
-  file.managed:
-    - source: salt://sensu/files/redis.json
-    - template: jinja
-    - user: root
-    - group: root
-    - mode: 644
-    - require:
-      - pkg: sensu
+  - sensu.redis_conf
 
 /etc/sensu/conf.d:
   file.recurse:
@@ -18,7 +12,7 @@ include:
     - template: jinja
     - require:
       - pkg: sensu
-    - require_in:
+    - watch_in:
       - service: sensu-server
 
 /etc/sensu/extensions:
@@ -27,8 +21,6 @@ include:
     - file_mode: 555
     - require:
       - pkg: sensu
-    - require_in:
-      - service: sensu-server
     - watch_in:
       - service: sensu-server
    
@@ -38,8 +30,6 @@ include:
     - file_mode: 555
     - require:
       - pkg: sensu
-    - require_in:
-      - service: sensu-server
     - watch_in:
       - service: sensu-server
 
@@ -56,10 +46,12 @@ include:
 
 {% set gem_list = salt['pillar.get']('sensu:server:install_gems', []) %}
 {% for gem in gem_list %}
-server_install_{{ gem }}:
-  cmd.run:
-    - name: /opt/sensu/embedded/bin/gem install {{ gem }} --no-ri --no-rdoc
-    - unless: /opt/sensu/embedded/bin/gem list | grep -q {{ gem }}
+install_{{ gem }}:
+  gem.installed:
+    - name: {{ gem }}
+    - gem_bin: /opt/sensu/embedded/bin/gem
+    - rdoc: False
+    - ri: False
 {% endfor %}
 
 sensu-server:
@@ -68,5 +60,3 @@ sensu-server:
     - require:
       - file: /etc/sensu/conf.d/redis.json
       - file: /etc/sensu/conf.d/rabbitmq.json
-    - watch:
-      - file: /etc/sensu/conf.d/*

@@ -23,12 +23,22 @@ sensu:
     key_pem: |
       < PUT PRIVATE KEY HERE IF USING SLL >
   uchiwa:
-    sites:
-      site1:
-        user: bobby
-        password: secret
-      site2:
-        host: 1.2.3.4
-        password: secret
+    host: localhost
+    loglevel: warn
+    users:
+      - username: bobby
+        password: testy
+        role:
+          readonly: True
+  sites:
+    - name: 'Site 1'
+      host: '1.1.1.1'
+      user: bobby
+      password: secret
+    - name: 'Site 2'
+      host: 1.2.3.4
+      user: nicky
+      password: secret
+      ssl: True
   etcdefaultsensu:
     log_leveL: 'info' #possible: debug, info, warn, error
