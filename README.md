@@ -11,6 +11,10 @@ Sensu can be configured/scaled with the individual states installed on multiple 
 >Note:
 This formula only manages Sensu!! You are responsible for installing/configuring RabbitMQ and Redis as appropriate.
 
+>Compatibility:
+Sensu Client should be working on Ubuntu, CentOS and Windows.
+Sensu Server, API and Uchiwa should be working on Ubuntu and CentOS.
+
 Example top.sls:
 ```
 base:
@@ -26,6 +30,19 @@ base:
     'uchiwa-*':
         - sensu.uchiwa
 ```
+
+Backward incompatible changes
+=============================
+
+2015-04-15
+----------
+
+The default ``sensu:rabbitmq:port`` value is now 5672 (which is the default port of RabbitMQ) instead of 5671. Port 5671 was used to support SSL/TLS as you cannot configure TLS on port 5672.
+
+* If you happened to have used the default previous value of 5671, you should now set it in your pillar file or change your RabbitMQ configuration.
+* If you overrode the previous default value of 5671 with 5672, you can now safely remove it.
+* If you set up something else instead, you don't have to change anything :)
+
 
 Available states
 ================
@@ -66,6 +83,7 @@ sensu:
   redis:
     host: HOSTNAME
     port: PORT
+    password: PASSWORD # Optional
 ```
 
 If you are adding handlers which have additional gem dependencies, i.e the [mailer](https://github.com/sensu/sensu-community-plugins/blob/master/handlers/notification/mailer.rb) handler. You can add them to the pillar data and they will be installed on your Sensu servers.
@@ -92,16 +110,25 @@ sensu:
     nagios_plugins: true
 ```
 
-To subscribe your clients to the appropriate checks, extend the sensu.client state and override the /etc/sensu/conf.d/client.json file block. You must provide your own method, I am currently using custom set grains associated to the servers's role.
+To subscribe your clients to the appropriate checks, you can update the `sensu` pillar with the required subscriptions.  You can also override the client address to another interface or change the name of the client.  In addition, you can also enable Sensu's safe mode (highly recommended, off by default).
 
 ```
-include:
-  - sensu.client
+sensu:
+  client:
+    name: {{ grains['sensu_id'] }}
+    address: {{ grains['ip4_interfaces']['eth0'][0] }}
+    subscriptions: ['linux', 'compute']
+```
 
-extend:
-  /etc/sensu/conf.d/client.json:
-    file.managed:
-      - source: salt://your/file/here
+If you would like to use [command tokens](https://sensuapp.org/docs/latest/checks#example-check-command-tokens) in your checks you can add a section under client as shown here:
+
+```
+sensu:
+  client:
+    command_tokens:
+      disk:
+        warning: 97
+        critical: 99
 ```
 
 If you are adding plugins/checks which have additional gem dependencies. You can add them to the pillar data and they will be installed on your Sensu clients.
@@ -118,9 +145,33 @@ sensu:
 
 Configures sensu-api and starts the service.
 
+
+
 ``sensu.uchiwa``
 ------------
+>Note: The Uchiwa pillar structure has changed! If you have previously used this state and are potentially upgrading, please take a minute to review.
 
-Configures [uchiwa](http://sensuapp.org/docs/latest/dashboards_uchiwa) and starts the service.
+Configures [uchiwa](http://docs.uchiwa.io/en/latest/) and starts the service. The pillar defaults are located in the ```pillar_map.jinja```.
 
-Uchiwa can manage multiple Sensu clusters. You can manage them by creating more sites in the pillar. Override the neccesary default values.
+The state now supports [multiple users with simple authentication](http://docs.uchiwa.io/en/latest/configuration/uchiwa/#multiple-users-with-simple-authentication). If you are upgrading from a previous version of this state, you will need make some minor modifications to your pillar.
+
+**Site and user definitions**
+``` yaml
+# new style users and sites
+sensu:
+    uchiwa:
+        users:
+            - username: bobby
+              password: secret
+              role: { readonly: False } 
+    sites:
+        - name: 'Site 1'
+          host: '1.1.1.1'
+          user: 'bobby'
+          password: secret
+        - name: 'Site 2'
+          host: localhost
+          user: nicky
+          password: secret
+          ssl: True
+```

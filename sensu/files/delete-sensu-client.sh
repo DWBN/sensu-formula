@@ -13,4 +13,4 @@
 # Description:    Sensu monitoring framework client - Remove Client on stop
 ### END INIT INFO
 
-curl -X DELETE http://access:granted@{{ sensu.rabbitmq.host }}:4567/clients/{% if sensu.client.add_machine_id -%}{{ grains['fqdn'] }}-{{ grains['machine_id'] }}{% else -%}{{ grains['fqdn'] }}{% endif -%}
+curl -X DELETE http://access:granted@{{ sensu.rabbitmq.host }}:4567/clients/{{ grains['fqdn'] }}-{{ grains['machine_id'] }}
