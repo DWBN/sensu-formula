@@ -6,11 +6,7 @@
         'client': {
             'embedded_ruby': False,
             'nagios_plugins': False,          
-            {% if sensu.client.add_machine_id -%}
             'name': salt['grains.get]'('fqdn')-('machine_id'),
-            {% else -%}
-            'name': salt['grains.get]'('fqdn'),
-            {% endif -%}
             'address': salt['grains.get']('ipv4')[0],
             'subscriptions': ['all'],
             'graphite-url': 'http://set-to-your-domainname',
