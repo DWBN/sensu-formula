@@ -9,10 +9,14 @@
             'name': salt['grains.get']('fqdn'),
             'address': salt['grains.get']('ipv4')[0],
             'subscriptions': ['all'],
+            'load': '',
+            'cpu_util': '',
+            'disk_usage_root': '',
+            'more_stats': '',
             'graphite-url': 'http://set-to-your-domainname',
             'grafana-url': 'http://set-to-your-domainname',
-            'add_machine_id': False,
             'safe_mode': False
+
         },
         'redis': {
             'host': 'localhost',

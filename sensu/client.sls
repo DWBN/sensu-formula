@@ -36,6 +36,10 @@ sensu_enable_windows_service:
           name: {{ sensu.client.name }}
           address: {{ sensu.client.address }}
           subscriptions: {{ sensu.client.subscriptions }}
+          load: {{ sensu.client.load }}
+          cpu_util: {{ sensu.client.cpu_util }}
+          disk_usage_root: {{ sensu.client.disk_usage_root }}
+          more_stats: {{ sensu.client.more_stats }}
           safe_mode: {{ sensu.client.safe_mode }}
 {% if sensu.client.get("command_tokens") %}
           command_tokens: {{ sensu.client.command_tokens }}
