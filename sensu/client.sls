@@ -36,10 +36,21 @@ sensu_enable_windows_service:
           name: {{ sensu.client.name }}
           address: {{ sensu.client.address }}
           subscriptions: {{ sensu.client.subscriptions }}
+{% if sensu.client.get("load") %}
           load: {{ sensu.client.load }}
+{% endif %}
+{% if sensu.client.get("cpu_util") %}
           cpu_util: {{ sensu.client.cpu_util }}
+{% endif %}
+{% if sensu.client.get("disk_usage_root") %}
           disk_usage_root: {{ sensu.client.disk_usage_root }}
+{% endif %}
+{% if sensu.client.get("ram") %}
+          ram: {{ sensu.client.ram }}
+{% endif %}
+{% if sensu.client.get("more_stats") %}
           more_stats: {{ sensu.client.more_stats }}
+{% endif %}
           safe_mode: {{ sensu.client.safe_mode }}
 {% if sensu.client.get("command_tokens") %}
           command_tokens: {{ sensu.client.command_tokens }}
