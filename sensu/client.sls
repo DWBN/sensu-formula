@@ -55,12 +55,15 @@ sensu_enable_windows_service:
 {% if sensu.client.get("command_tokens") %}
           command_tokens: {{ sensu.client.command_tokens }}
 {% endif %}
+{% if sensu.client.get("redact") %}
+          redact: {{ sensu.client.redact }}
+{% endif %}
     - require:
       - pkg: sensu
 
 /etc/sensu/plugins:
   file.recurse:
-    - source: salt://sensu/files/plugins
+    - source: salt://{{ sensu.paths.plugins }}
     {% if grains['os_family'] != 'Windows' %}
     - file_mode: 555
     {% endif %}
@@ -81,6 +84,20 @@ sensu-client:
     - watch:
       - file: /etc/sensu/conf.d/*
       - file: /etc/default/sensu
+
+{% if grains['os_family'] != 'Windows' %}
+/etc/default/sensu:
+  file.replace:
+{%- if sensu.client.embedded_ruby %}
+    - pattern: 'EMBEDDED_RUBY=false'
+    - repl: 'EMBEDDED_RUBY=true'
+{%- else %}
+    - pattern: 'EMBEDDED_RUBY=true'
+    - repl: 'EMBEDDED_RUBY=false'
+{%- endif %}
+    - watch_in:
+      - service: sensu-client
+{% endif %}
 
 /etc/rc0.d/K25delete-sensu-client.sh:
   file.managed:
@@ -109,3 +126,18 @@ install_{{ gem }}:
     - rdoc: False
     - ri: False
 {% endfor %}
+
+{%- if salt['pillar.get']('sensu:checks') %}
+
+sensu_checks_file:
+  file.serialize:
+    - name: {{ sensu.paths.checks_file }}
+    - dataset:
+        checks: {{ salt['pillar.get']('sensu:checks') }}
+    - formatter: json
+    - require:
+      - pkg: sensu
+    - watch_in:
+      - service: sensu-client
+
+{%- endif %}

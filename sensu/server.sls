@@ -8,16 +8,30 @@ include:
 
 /etc/sensu/conf.d:
   file.recurse:
-    - source: salt://sensu/files/conf.d
+    - source: salt://{{ sensu.paths.conf_d }}
     - template: jinja
     - require:
       - pkg: sensu
     - watch_in:
       - service: sensu-server
 
+{%- if salt['pillar.get']('sensu:handlers') %}
+
+sensu_handlers_file:
+  file.serialize:
+    - name: {{ sensu.paths.handlers_file }}
+    - dataset_pillar: sensu:handlers
+    - formatter: JSON
+    - require:
+      - pkg: sensu
+    - watch_in:
+      - service: sensu-server
+
+{% endif %}
+
 /etc/sensu/extensions:
   file.recurse:
-    - source: salt://sensu/files/extensions
+    - source: salt://{{ sensu.paths.extensions }}
     - file_mode: 555
     - require:
       - pkg: sensu
@@ -26,7 +40,7 @@ include:
    
 /etc/sensu/mutators:
   file.recurse:
-    - source: salt://sensu/files/mutators
+    - source: salt://{{ sensu.paths.mutators }}
     - file_mode: 555
     - require:
       - pkg: sensu
@@ -35,7 +49,7 @@ include:
 
 /etc/sensu/handlers:
   file.recurse:
-    - source: salt://sensu/files/handlers
+    - source: salt://{{ sensu.paths.handlers }}
     - file_mode: 555
     - require:
       - pkg: sensu

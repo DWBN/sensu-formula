@@ -4,12 +4,19 @@ sensu-formula
 A saltstack formula to install and configure the open source monitoring framework, [Sensu](http://sensuapp.org/).
 
 >Note:
-See the full [Salt Formulas installation and usage instructions](http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html).
+See the full [Salt Formulas installation and usage instructions](http://docs.saltstack.com/en/latest/topics/development/conventions/formulas.html). This formula only manages Sensu. You are responsible for installing/configuring RabbitMQ and Redis as appropriate.
 
-Sensu can be configured/scaled with the individual states installed on multiple servers. All states are configured via the pillar file. Sane defaults are set in pillar_map.jinja and can be over-written in the pillar.
+Sensu can be configured/scaled with the individual states installed on multiple servers. All states are configured via the pillar file. Sane defaults are set in pillar_map.jinja and can be over-written in the pillar. The `sensu.client` state currently supports Ubuntu, CentOS and Windows. The `sensu.server`, `sensu.api` and `sensu.uchiwa` states currently support Ubuntu and CentOS.
 
->Note:
-This formula only manages Sensu!! You are responsible for installing/configuring RabbitMQ and Redis as appropriate.
+Thank you to the SaltStack community for the continued improvement of this formula!
+
+Available states
+================
+* [sensu](#sensu)
+* [sensu.server](#sensuserver)
+* [sensu.client](#sensuclient)
+* [sensu.api](#sensuapi)
+* [sensu.uchiwa](#sensuuchiwa)
 
 >Compatibility:
 Sensu Client should be working on Ubuntu, CentOS and Windows.
@@ -19,7 +26,7 @@ Example top.sls:
 ```
 base:
     '*':
-        - sensu.client 
+        - sensu.client
 
     'sensu-server-*':
         - sensu.server
@@ -31,26 +38,17 @@ base:
         - sensu.uchiwa
 ```
 
+`paths`: The `source` path for the handlers/plugins/extentions/etc are configurable in the pillar if you would like to keep these items in a different location. Please note, this directory must be located on the salt master file server and will be prepended with the `salt://` protocol by the formula. If the directory is located on the master in the directory named spam, and is called eggs, the source string is `spam/eggs` and will be converted to `salt://spam/eggs`.
+
 Backward incompatible changes
 =============================
 
-2015-04-15
-----------
-
-The default ``sensu:rabbitmq:port`` value is now 5672 (which is the default port of RabbitMQ) instead of 5671. Port 5671 was used to support SSL/TLS as you cannot configure TLS on port 5672.
-
+**2015-04-15:** The default ``sensu:rabbitmq:port`` value is now 5672 (which is the default port of RabbitMQ) instead of 5671. Port 5671 was used to support SSL/TLS as you cannot configure TLS on port 5672.
 * If you happened to have used the default previous value of 5671, you should now set it in your pillar file or change your RabbitMQ configuration.
 * If you overrode the previous default value of 5671 with 5672, you can now safely remove it.
 * If you set up something else instead, you don't have to change anything :)
 
-
-Available states
-================
-* [sensu](#sensu)
-* [sensu.server](#sensuserver)
-* [sensu.client](#sensuclient)
-* [sensu.api](#sensuapi)
-* [sensu.uchiwa](#sensuuchiwa)
+**2016-01-08:** The pillar structure for `sensu.uchiwa` has been slightly modified to make it more closely resemble the rendered json and to support multiple users. Please confirm your existing pillar.
 
 ``sensu``
 ------------
@@ -62,7 +60,7 @@ Adds the Sensu repository, and installs the Sensu package.
 
 Configures sensu-server and starts the service.
 
-Requires minimum rabbitmq configuration. 
+Requires minimum rabbitmq configuration.
 ```
 sensu:
   rabbitmq:
@@ -131,6 +129,17 @@ sensu:
         critical: 99
 ```
 
+If you would like to use the [redact](https://sensuapp.org/docs/latest/clients) feature in your checks you can add a section under client as shown here:
+
+```
+sensu:
+  client:
+    redact:
+      - password
+```
+
+This will redact any command token value who's key is defined as "password" from check configurations and logs. Command token substitution should be used in check configurations when redacting sensitive information such as passwords.
+
 If you are adding plugins/checks which have additional gem dependencies. You can add them to the pillar data and they will be installed on your Sensu clients.
 ```
 sensu:
@@ -163,15 +172,15 @@ sensu:
         users:
             - username: bobby
               password: secret
-              role: { readonly: False } 
+              role: { readonly: False }
     sites:
         - name: 'Site 1'
           host: '1.1.1.1'
           user: 'bobby'
-          password: secret
+          pass: secret
         - name: 'Site 2'
           host: localhost
           user: nicky
-          password: secret
+          pass: secret
           ssl: True
 ```

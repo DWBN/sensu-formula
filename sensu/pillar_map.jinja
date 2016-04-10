@@ -5,7 +5,7 @@
     'default': {
         'client': {
             'embedded_ruby': False,
-            'nagios_plugins': False,          
+            'nagios_plugins': False,
             'name': salt['grains.get']('fqdn'),
             'address': salt['grains.get']('ipv4')[0],
             'subscriptions': ['all'],
@@ -32,7 +32,7 @@
         },
         'rabbitmq': {
             'host': 'localhost',
-            'port': 5671,
+            'port': 5672,
             'vhost': '/sensu',
             'user': 'sensu',
             'password': ''
@@ -74,6 +74,15 @@
                 'password': '',
                 'timeout': 5
             }
-        ]
+        ],
+        'paths': {
+            'plugins'       : 'sensu/files/plugins',
+            'conf_d'        : 'sensu/files/conf.d',
+            'extensions'    : 'sensu/files/extensions',
+            'mutators'      : 'sensu/files/mutators',
+            'handlers'      : 'sensu/files/handlers',
+            'checks_file'   : '/etc/sensu/conf.d/checks.json',
+            'handlers_file' : '/etc/sensu/conf.d/handlers.json',
+        },
     },
 }, merge=salt['pillar.get']('sensu'), default='default') %}

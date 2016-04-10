@@ -6,6 +6,8 @@ sensu:
   client:
     embedded_ruby: true
     nagios_plugins: true
+    redact:
+      - password
     add_machine_id: false
     graphite_url: 'http://path_to_your_graphite_host'
     grafana_url: 'http://path_to_your_grafana_host'
@@ -34,11 +36,33 @@ sensu:
     - name: 'Site 1'
       host: '1.1.1.1'
       user: bobby
-      password: secret
+      pass: secret
     - name: 'Site 2'
       host: 1.2.3.4
       user: nicky
-      password: secret
+      pass: secret
       ssl: True
+  # Configurable path support.
+  paths:
+    plugins: monitoring/checks
+    handlers: monitoring/handlers
+  # Optional: Checks within Pillar
+  checks:
+    check_http:
+      handlers:
+        - pagerduty
+      command: "/etc/sensu/plugins/check-http.rb -h localhost -p 443 -s -e 30"
+      interval: 300
+      occurences: 2
+      subscribers:
+        - ssl_server
+  # Optional: Pillarized Handler files
+  handlers:
+    handlers:
+      pagerduty:
+        type: pipe
+        command: /etc/sensu/handlers/pagerduty.rb
+    pagerduty:
+      api_key: "encrypted or secure apikey"
   etcdefaultsensu:
     log_leveL: 'info' #possible: debug, info, warn, error
