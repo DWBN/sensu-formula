@@ -85,19 +85,6 @@ sensu-client:
       - file: /etc/sensu/conf.d/*
       - file: /etc/default/sensu
 
-{% if grains['os_family'] != 'Windows' %}
-/etc/default/sensu:
-  file.replace:
-{%- if sensu.client.embedded_ruby %}
-    - pattern: 'EMBEDDED_RUBY=false'
-    - repl: 'EMBEDDED_RUBY=true'
-{%- else %}
-    - pattern: 'EMBEDDED_RUBY=true'
-    - repl: 'EMBEDDED_RUBY=false'
-{%- endif %}
-    - watch_in:
-      - service: sensu-client
-{% endif %}
 
 /etc/rc0.d/K25delete-sensu-client.sh:
   file.managed:
