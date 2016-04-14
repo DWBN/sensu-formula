@@ -92,6 +92,13 @@ sensu-client:
     - source: salt://sensu/files/delete-sensu-client.sh
     - template: jinja
 
+/etc/sensu/checks.sh:
+  file.managed:
+    - mode: 775
+    - source: salt://sensu/files/checks.sh
+    - template: jinja
+    
+
 {% if sensu.client.nagios_plugins %}
 {{ services.nagios_plugins }}:
   pkg:
